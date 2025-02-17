@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Sign In</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/agent_signin.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Agent Sign In</h1>
+        <form method="POST">
+            <div class="input-group">
+                <label for="email">Email</label>
+                <input type="email" name="email" id="email" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" name="password" id="password" required>
+            </div>
+            <button type="submit" class="button">Sign In</button>
+            <p><a href="{{ url_for('agent_signup') }}">Don't have an account? Sign Up</a></p>
+        </form>
+    </div>
+</body>
+</html>

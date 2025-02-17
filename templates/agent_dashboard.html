@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/agent_dashboard.css') }}">
+</head>
+<body>
+   
+    <div class="container">
+        <h1>Welcome, {{ agent['name'] }}</h1>
+        
+        <!-- Stats Section -->
+        <div class="stats">
+            <div class="stat">
+                <h2>Total Reports</h2>
+                <p>{{ total_reports }}</p>
+            </div>
+            <div class="stat">
+                <h2>Pending Reports</h2>
+                <p>{{ pending_reports }}</p>
+            </div>
+        </div>
+
+        <!-- Filter Form (GET method) -->
+        <form method="GET" action="{{ url_for('agent_dashboard') }}">
+            <label for="status">Filter by Status:</label>
+            <select name="status" id="status">
+                <option value="approved" {% if request.args.get('status') == 'approved' %}selected{% endif %}>Approved</option>
+                <option value="pending" {% if request.args.get('status') == 'pending' %}selected{% endif %}>Pending</option>
+                <option value="rejected" {% if request.args.get('status') == 'rejected' %}selected{% endif %}>Rejected</option>
+            </select>
+            <button type="submit">Filter</button>
+        </form>
+
+        <!-- Reports Section -->
+        <div class="reports">
+            <h2>Reports</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Client ID</th>
+                        <th>Problem Description</th>
+                        <th>Status</th>
+                        <th>Date Reported</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for report in reports %}
+                    <tr>
+                        <td>{{ report['client_email'] }}</td>
+                        <td>{{ report['complaint_desc'] }}</td>
+                        <td>{{ report['status'] }}</td>
+                        <td>{{ report['date'] }}</td>
+                        <td>
+                            <!-- Form to update report status (POST method) -->
+                            <form method="POST" action="{{ url_for('agent_dashboard') }}">
+                                <input type="hidden" name="report_id" value="{{ report['_id'] }}">
+                                <select name="status">
+                                    <option value="approved" {% if report['status'] == 'approved' %}selected{% endif %}>Approved</option>
+                                    <option value="rejected" {% if report['status'] == 'rejected' %}selected{% endif %}>Rejected</option>
+                                    <option value="pending" {% if report['status'] == 'pending' %}selected{% endif %}>Pending</option>
+                                </select>
+                                <button type="submit">Update Status</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</body>
+</html>

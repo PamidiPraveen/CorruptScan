@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Your Report</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Track Your Report</h1>
+        <p class="subtitle">Check the status of your submitted corruption report below.</p>
+
+        {% if reports %}
+            <div class="report-list">
+                {% for report in reports %}
+                    <div class="report-item">
+                        <h2>{{ report['title'] }}</h2>
+                        <p><strong>Description:</strong> {{ report['description'] }}</p>
+                        <p><strong>Status:</strong> 
+                            {% if report['status'] == 'accepted' %}
+                                <span class="status accepted">Accepted</span>
+                            {% elif report['status'] == 'rejected' %}
+                                <span class="status rejected">Rejected</span>
+                            {% else %}
+                                <span class="status in-progress">In Progress</span>
+                            {% endif %}
+                        </p>
+                        <p><strong>Date Submitted:</strong> {{ report['date'] }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>You have not submitted any reports yet.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

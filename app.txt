@@ -1,0 +1,201 @@
+from flask import Flask, render_template, request, redirect, url_for, flash, session
+from pymongo import MongoClient
+import bcrypt
+from datetime import datetime
+
+app = Flask(__name__)
+app.secret_key = 'your_secret_key'  # Required for flashing messages and session management
+
+# MongoDB connection
+uri = "mongodb+srv://techtitanscseb:Titans1234@cluster0.um9wb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+client = MongoClient(uri)
+db = client.corruptscan  # Database name
+client_details = db.client_details  # Collection for client details
+agent_details = db.agent_details  # Collection for agent details
+corruption_reports = db.corruption_reports  # Collection for corruption reports
+
+# Route for the home page
+@app.route('/')
+def home():
+    return render_template('home.html')
+
+# Route for client sign-in
+@app.route('/client/signin', methods=['GET', 'POST'])
+def client_signin():
+    if request.method == 'POST':
+        email = request.form.get('email').strip()
+        password = request.form.get('password').strip()
+
+        # Find the client by email
+        client = client_details.find_one({'email': email})
+
+        if client:
+            # Verify the password
+            if bcrypt.checkpw(password.encode('utf-8'), client['password'].encode('utf-8')):
+                flash('Sign in successful!', 'success')
+                session['client_email'] = email  # Store client email in session
+                return redirect(url_for('client_dashboard'))  # Redirect to client dashboard
+            else:
+                flash('Invalid email or password', 'error')
+                return render_template('client_signin.html', error='Invalid email or password')
+        else:
+            flash('Invalid email or password', 'error')
+            return render_template('client_signin.html', error='Invalid email or password')
+
+    return render_template('client_signin.html')
+
+# Route for client sign-up
+@app.route('/client/signup', methods=['GET', 'POST'])
+def client_signup():
+    if request.method == 'POST':
+        # Get form data
+        client_data = {
+            'name': request.form.get('name'),
+            'mobile': request.form.get('mobile'),
+            'email': request.form.get('email'),
+            'address': request.form.get('address'),
+            'state': request.form.get('state'),
+            'district': request.form.get('district'),
+            'age': int(request.form.get('age')),
+            'profession': request.form.get('profession'),
+            'aadhaar': request.form.get('aadhaar'),
+            'gender': request.form.get('gender'),
+            'password': bcrypt.hashpw(request.form.get('password').encode('utf-8'), bcrypt.gensalt()).decode('utf-8')  # Hash password
+        }
+
+        # Check if the email already exists in the database
+        existing_client = client_details.find_one({'email': client_data['email']})
+        if existing_client:
+            flash('Email already exists! Please use a different email.', 'error')
+            return render_template('client_signup.html', error='Email already exists')
+
+        # Insert the new client into the database
+        client_details.insert_one(client_data)
+        flash('Sign up successful! Please sign in.', 'success')
+        return redirect(url_for('client_signin'))
+
+    return render_template('client_signup.html')
+
+# Route for agent sign-in
+@app.route('/agent/signin', methods=['GET', 'POST'])
+def agent_signin():
+    if request.method == 'POST':
+        email = request.form.get('email').strip()
+        password = request.form.get('password').strip()
+
+        # Find the agent by email
+        agent = agent_details.find_one({'email': email})
+
+        if agent:
+            # Verify the password
+            if bcrypt.checkpw(password.encode('utf-8'), agent['password'].encode('utf-8')):
+                flash('Sign in successful!', 'success')
+                session['agent_email'] = email  # Store agent email in session
+                return redirect(url_for('agent_dashboard'))  # Redirect to agent dashboard
+            else:
+                flash('Invalid email or password', 'error')
+                return render_template('agent_signin.html', error='Invalid email or password')
+        else:
+            flash('Invalid email or password', 'error')
+            return render_template('agent_signin.html', error='Invalid email or password')
+
+    return render_template('agent_signin.html')
+
+# Route for agent sign-up
+@app.route('/agent/signup', methods=['GET', 'POST'])
+def agent_signup():
+    if request.method == 'POST':
+        # Get form data
+        agent_data = {
+            'full_name': request.form.get('full_name'),
+            'email': request.form.get('email'),
+            'department': request.form.get('department'),
+            'employee_id': request.form.get('employee_id'),
+            'designation': request.form.get('designation'),
+            'department_address': request.form.get('department_address'),
+            'password': bcrypt.hashpw(request.form.get('password').encode('utf-8'), bcrypt.gensalt()).decode('utf-8')  # Hash password
+        }
+
+        # Check if the email already exists in the database
+        existing_agent = agent_details.find_one({'email': agent_data['email']})
+        if existing_agent:
+            flash('Email already exists! Please use a different email.', 'error')
+            return render_template('agent_signup.html', error='Email already exists')
+
+        # Insert the new agent into the database
+        agent_details.insert_one(agent_data)
+        flash('Sign up successful! Please sign in.', 'success')
+        return redirect(url_for('agent_signin'))
+
+    return render_template('agent_signup.html')
+
+# Route for client dashboard (combines report corruption and track report)
+@app.route('/client/dashboard', methods=['GET', 'POST'])
+def client_dashboard():
+    if 'client_email' not in session:
+        flash('Please sign in to access the dashboard.', 'error')
+        return redirect(url_for('client_signin'))
+
+    if request.method == 'POST':
+        # Handle report submission
+        report_data = {
+            'client_email': session['client_email'],  # Use client email from session
+            'complaint_desc': request.form.get('complaint_desc'),
+            'complainee_name': request.form.get('complainee_name'),
+            'corruption_amount': request.form.get('corruption_amount'),
+            'eyewitness_name': request.form.get('eyewitness_name'),
+            'eyewitness_address': request.form.get('eyewitness_address'),
+            'eyewitness_age': request.form.get('eyewitness_age'),
+            'proofs': request.files['proofs'].read(),  # Store file as binary data
+            'status': 'in-progress',  # Default status
+            'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # Add submission date
+        }
+
+        # Insert the report into the database
+        corruption_reports.insert_one(report_data)
+        flash('Report submitted successfully!', 'success')
+        return redirect(url_for('client_dashboard'))
+
+    # Fetch all reports for the logged-in client
+    client_email = session['client_email']
+    reports = list(corruption_reports.find({'client_email': client_email}))
+
+    return render_template('client_dashboard.html', reports=reports)
+
+# Route for agent dashboard
+@app.route('/agent/dashboard')
+def agent_dashboard():
+    if 'agent_email' not in session:
+        flash('Please sign in to access the dashboard.', 'error')
+        return redirect(url_for('agent_signin'))
+
+    # Fetch agent details from the session
+    agent_email = session['agent_email']
+    agent = agent_details.find_one({'email': agent_email})
+
+    if not agent:
+        flash('Agent not found. Please sign in again.', 'error')
+        return redirect(url_for('agent_signin'))
+
+    # Fetch all reports assigned to the agent (assuming reports have an 'assigned_agent' field)
+    reports = list(corruption_reports.find({'assigned_agent': agent_email}))
+
+    # Calculate total and pending reports
+    total_reports = len(reports)
+    pending_reports = len([report for report in reports if report['status'] == 'in-progress'])
+
+    return render_template('agent_dashboard.html', agent=agent, total_reports=total_reports, pending_reports=pending_reports, reports=reports)
+
+# Route for logging out
+@app.route('/logout')
+def logout():
+    session.clear()  # Clear the session
+    flash('You have been logged out.', 'success')
+    return redirect(url_for('home'))
+
+if __name__ == '__main__':
+    app.run(
+        host="0.0.0.0",
+        port=1234,
+        debug=True
+    )

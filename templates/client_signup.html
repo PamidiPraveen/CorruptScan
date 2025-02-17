@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Sign Up</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/client_signup.css') }}">
+</head>
+<body>
+
+    <div class="background-overlay"></div>
+    <div class="container">
+        <h1>Client Sign Up</h1>
+        <p class="subtitle">Create your account to report corruption.</p>
+
+        <!-- Client Signup Form -->
+        <form class="signup-form" method="POST">
+            <div class="input-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+            </div>
+
+            <div class="input-group">
+                <label for="mobile">Mobile No</label>
+                <input type="text" id="mobile" name="mobile" placeholder="Enter your mobile number" required>
+            </div>
+
+            <div class="input-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+            </div>
+
+            <div class="input-group">
+                <label for="address">Address</label>
+                <input type="text" id="address" name="address" placeholder="Enter your address" required>
+            </div>
+
+            <div class="input-group">
+                <label for="state">State</label>
+                <input type="text" id="state" name="state" placeholder="Enter your state" required>
+            </div>
+
+            <div class="input-group">
+                <label for="district">District</label>
+                <input type="text" id="district" name="district" placeholder="Enter your district" required>
+            </div>
+
+            <div class="input-group">
+                <label for="age">Age</label>
+                <input type="number" id="age" name="age" placeholder="Enter your age" required>
+            </div>
+
+            <div class="input-group">
+                <label for="profession">Profession</label>
+                <input type="text" id="profession" name="profession" placeholder="Enter your profession" required>
+            </div>
+
+            <div class="input-group">
+                <label for="aadhaar">Aadhaar No</label>
+                <input type="text" id="aadhaar" name="aadhaar" placeholder="Enter your Aadhaar number" required>
+            </div>
+
+            <div class="input-group">
+                <label for="gender">Gender</label>
+                <select id="gender" name="gender" required>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            </div>
+
+            <div class="input-group">
+                <label for="confirm-password">Confirm Password</label>
+                <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm your password" required>
+            </div>
+
+            <div class="button-container">
+                <button type="submit" class="button">Sign Up</button>
+            </div>
+
+            <div class="extra-links">
+                <p>Already have an account? <a href="{{ url_for('client_signin') }}">Sign In</a></p>
+            </div>
+        </form>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+    </div>
+
+</body>
+</html>

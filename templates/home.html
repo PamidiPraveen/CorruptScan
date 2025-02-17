@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CorruptScan</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+</head>
+<body>
+    <div class="background-image"></div>
+    <div class="container">
+        <h1>Corrupt Scan</h1>
+
+        <!-- Sections: Client, Corrupt Agent -->
+        <div class="sections-container">
+            <!-- Client Section -->
+            <div class="section">
+                <div class="icon">
+                    <i class="fas fa-user"></i>
+                </div>
+                <h2>Client</h2>
+                <div class="button-container">
+                    <!-- Use proper JavaScript syntax for onclick -->
+                    <button class="button" onclick="window.location.href='{{ url_for('client_signin') }}'">Sign In</button>
+                    <button class="button" onclick="window.location.href='{{ url_for('client_signup') }}'">Sign Up</button>
+                </div>
+            </div>
+
+            <!-- Corrupt Agent Section -->
+            <div class="section">
+                <div class="icon">
+                    <i class="fas fa-user-secret"></i>
+                </div>
+                <h2>Corrupt Agent</h2>
+                <div class="button-container">
+                    <button class="button" onclick="window.location.href='{{ url_for('agent_signin') }}'">Sign In</button>
+                    <button class="button" onclick="window.location.href='{{ url_for('agent_signup') }}'">Sign Up</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

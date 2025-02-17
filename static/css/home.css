@@ -1,0 +1,208 @@
+/* General Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+    color: #fff;
+    background: linear-gradient(to bottom, #f0f8ff, #00c6ff, #00ffcc); /* Vibrant blue-green gradient */
+    position: relative;
+}
+
+/* Background Image with Overlay */
+.background-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('futuristic-car.jpg');
+    background-size: cover;
+    background-position: center;
+    filter: brightness(0.6);
+    z-index: -1;
+    animation: fadeInBackground 15s ease-in-out infinite, moveBackground 30s linear infinite; /* Background animation */
+}
+
+/* Background Animation: Fade in/out */
+@keyframes fadeInBackground {
+    0% { filter: brightness(0.6); }
+    50% { filter: brightness(0.8); }
+    100% { filter: brightness(0.6); }
+}
+
+/* Background Animation: Parallax-like effect */
+@keyframes moveBackground {
+    0% { background-position: 0 0; }
+    50% { background-position: 50% 50%; }
+    100% { background-position: 0 0; }
+}
+
+/* Adding Overlay Color */
+.background-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Dark overlay */
+    z-index: -2;
+}
+
+/* Container Styling */
+.container {
+    background: rgba(0, 0, 0, 0.7);
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    width: 1000px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+    transition: transform 0.3s ease-in-out;
+    z-index: 1;
+}
+
+.container:hover {
+    transform: scale(1.05); /* Slight zoom effect on hover */
+}
+
+h1 {
+    font-size: 4rem;
+    margin-bottom: 15px;
+    font-weight: bold;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    position: relative;
+}
+
+h1 span {
+    background: linear-gradient(45deg, #ff6f61, #00b3ff); /* Gradient background for the text */
+    -webkit-background-clip: text; /* Background clip only to text (for Chrome and Safari) */
+    background-clip: text; /* Fallback for other browsers */
+    color: transparent; /* Make color transparent to show the gradient */
+    animation: textGlow 1.5s ease-in-out infinite alternate, textBounce 1.5s ease infinite; /* Adding glow and bounce animation */
+    text-shadow: 0 0 6px #ff6f61, 0 0 12px #ff6f61, 0 0 20px #00b3ff, 0 0 30px #00b3ff; /* Reduced glow */
+}
+
+/* Glowing Text Animation */
+@keyframes textGlow {
+    0% { text-shadow: 0 0 6px #ff6f61, 0 0 12px #ff6f61, 0 0 20px #00b3ff, 0 0 30px #00b3ff; }
+    50% { text-shadow: 0 0 10px #ff6f61, 0 0 20px #ff6f61, 0 0 30px #00b3ff, 0 0 40px #00b3ff; }
+    100% { text-shadow: 0 0 6px #ff6f61, 0 0 12px #ff6f61, 0 0 20px #00b3ff, 0 0 30px #00b3ff; }
+}
+
+/* Text Bounce Animation */
+@keyframes textBounce {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+/* Sections container to display sections side by side */
+.sections-container {
+    display: flex;
+    justify-content: space-between; /* Ensure equal space between sections */
+    gap: 20px;
+    margin-top: 30px;
+}
+
+/* Individual Section Styling */
+.section {
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    transition: transform 0.3s ease-in-out;
+    width: 30%; /* Each section takes up 30% of the width */
+    text-align: center;
+}
+
+.section:hover {
+    transform: scale(1.02);
+}
+
+.section h2 {
+    font-size: 1.8rem;
+    margin-bottom: 12px;
+    color: #00ff88;
+    letter-spacing: 1px;
+}
+
+.icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    color: #00ff88;
+    transition: color 0.3s ease-in-out;
+}
+
+.icon:hover {
+    color: #00b3ff; /* Icon color change on hover */
+}
+
+/* Flexbox Layout for Buttons */
+.button-container {
+    display: flex;
+    justify-content: space-between; /* This ensures the buttons are spaced out */
+    gap: 10px; /* Space between the buttons */
+}
+
+.button {
+    background: linear-gradient(45deg, #00ff88, #00b3ff);
+    color: #000;
+    padding: 12px 22px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 48%; /* Adjust button width to fit two buttons side by side */
+    font-size: 1.2rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+}
+
+.button:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 8px 25px rgba(0, 255, 136, 0.4);
+    background: linear-gradient(45deg, #00b3ff, #00ff88); /* Button hover gradient switch */
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+    .container {
+        width: 90%;
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    .section h2 {
+        font-size: 1.4rem;
+    }
+
+    .button {
+        font-size: 1rem;
+        padding: 10px 20px;
+        width: 100%; /* Buttons will stack in smaller viewports */
+    }
+
+    .button-container {
+        flex-direction: column; /* Stack buttons vertically on smaller screens */
+    }
+
+    .sections-container {
+        flex-direction: column; /* Stack sections vertically on small screens */
+        gap: 30px;
+    }
+
+    .section {
+        width: 100%; /* Sections will take up full width on small screens */
+    }
+}
