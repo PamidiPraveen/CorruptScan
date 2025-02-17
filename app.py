@@ -3,7 +3,11 @@ from pymongo import MongoClient
 import bcrypt
 from datetime import datetime
 import joblib  # For ML model
+import logging
 from data import fetch_fee_charged, predict_report_status  # Import ML and DB functions
+
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Required for flashing messages and session management
@@ -18,7 +22,12 @@ corruption_reports = db.corruption_reports  # Collection for corruption reports
 department_details = db.department_details  # Collection for department details
 
 # Load the ML model
-ml_model = joblib.load('corruption_model.pkl')
+try:
+    ml_model = joblib.load('corruption_model.pkl')
+    logging.info("ML model loaded successfully.")
+except Exception as e:
+    logging.error(f"Error loading ML model: {e}")
+    ml_model = None
 
 # Route for the home page
 @app.route('/')
@@ -178,7 +187,7 @@ def report_corruption():
             return redirect(url_for('client_dashboard'))
 
         except Exception as e:
-            print("Error submitting report:", str(e))
+            logging.error(f"Error submitting report: {e}")
             flash('An error occurred while submitting the report. Please try again.', 'error')
             return redirect(url_for('report_corruption'))
 
@@ -198,7 +207,7 @@ def client_dashboard():
     return render_template('client_dashboard.html', reports=reports)
 
 # Route for agent dashboard
-@app.route('/agent/dashboard', methods=['post','get'])
+@app.route('/agent/dashboard', methods=['POST', 'GET'])
 def agent_dashboard():
     if 'agent_email' not in session:
         flash('Please sign in to access the dashboard.', 'error')
@@ -234,8 +243,4 @@ def agent_dashboard():
                            pending_reports=pending_reports, reports=reports)
 
 if __name__ == '__main__':
-    app.run(
-        host="0.0.0.0",
-        port=1234,
-        debug=True
-    )
+    app.run(debug=True)
