@@ -2,12 +2,6 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 from pymongo import MongoClient
 import bcrypt
 from datetime import datetime
-import joblib  # For ML model
-import logging
-from data import fetch_fee_charged, predict_report_status  # Import ML and DB functions
-
-# Configure logging
-logging.basicConfig(level=logging.DEBUG)
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Required for flashing messages and session management
@@ -20,14 +14,6 @@ client_details = db.client_details  # Collection for client details
 agent_details = db.agent_details  # Collection for agent details
 corruption_reports = db.corruption_reports  # Collection for corruption reports
 department_details = db.department_details  # Collection for department details
-
-# Load the ML model
-try:
-    ml_model = joblib.load('corruption_model.pkl')
-    logging.info("ML model loaded successfully.")
-except Exception as e:
-    logging.error(f"Error loading ML model: {e}")
-    ml_model = None
 
 # Route for the home page
 @app.route('/')
@@ -161,7 +147,7 @@ def report_corruption():
             amount = department_data["Fee Charged for Issue Solving (INR)"]
             corruption_amount = float(request.form.get('corruption_amount'))
 
-            # Determine status
+            # Temporarily set the status based on corruption amount or remove this step
             status = 'approved' if corruption_amount >= amount else 'rejected'
 
             # Prepare report data
@@ -187,7 +173,7 @@ def report_corruption():
             return redirect(url_for('client_dashboard'))
 
         except Exception as e:
-            logging.error(f"Error submitting report: {e}")
+            print("Error submitting report:", str(e))
             flash('An error occurred while submitting the report. Please try again.', 'error')
             return redirect(url_for('report_corruption'))
 
@@ -207,7 +193,7 @@ def client_dashboard():
     return render_template('client_dashboard.html', reports=reports)
 
 # Route for agent dashboard
-@app.route('/agent/dashboard', methods=['POST', 'GET'])
+@app.route('/agent/dashboard', methods=['post', 'get'])
 def agent_dashboard():
     if 'agent_email' not in session:
         flash('Please sign in to access the dashboard.', 'error')
@@ -243,4 +229,8 @@ def agent_dashboard():
                            pending_reports=pending_reports, reports=reports)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(
+        host="0.0.0.0",
+        port=1234,
+        debug=True
+    )
